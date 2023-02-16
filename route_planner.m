@@ -35,9 +35,10 @@ function [route, dist] = route_planner(dg, S, T)
 %% find path
 
 % BioInformatics Toolbox available ?
-if exist('graphshortestpath', 'file')
-    [dist, route] = graphshortestpath(dg, S, T, 'Directed', true,...
-                                      'Method', 'Dijkstra');
+if 1
+    [route, dist] = shortestpath(dg, S, T);%,'OutputForm','vector','Method', 'positive'
+   % [dist, route] = graphshortestpath(dg, S, T, 'Directed', true,...
+    %                                  'Method', 'Dijkstra');
 else
     [d, pred] = dijkstra(dg, S);
     

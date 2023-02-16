@@ -77,6 +77,21 @@ for curway=1:ways_num
         %  because the transportation netwrok graph is directed)
         connectivity_matrix(othernode_index, node1_index) = 0;
         
+        % connect waypoints to graph
+        if(othernode_local_index > 1)
+            
+            othernode_id_a = nodeset(1, othernode_local_index);
+            othernode_index_a = find(othernode_id_a == node_ids);
+            othernode_id_b = nodeset(1, othernode_local_index - 1);
+            othernode_index_b = find(othernode_id_b == node_ids);
+        
+            % waypoints connection without direction
+            connectivity_matrix(othernode_index_a, othernode_index_b) = 1;   
+            connectivity_matrix(othernode_index_b, othernode_index_a) = 1;
+
+        end
+
+
         % directed graph, hence asymmetric connectivity matrix (in general)
         for otherway=1:ways_num
             % skip same way
@@ -89,14 +104,8 @@ for curway=1:ways_num
             idx = find(otherway_nodeset == othernode_id, 1);
             if isempty(idx) == 0
                 Nsamends = Nsamends +1;
-                connectivity_matrix(node1_index, othernode_index) = 1;
-                node1_index = [node1_index, othernode_index];
+                connectivity_matrix(othernode_index, othernode_index) = 1;
                 
-                % node1 connected to othernode
-                % othernode belongs to at least one other way
-                % hence othernode is an intersection
-                % node1->othernode connectivity saved in connectivity_matrix
-                % this suffices, ignore rest of ways through othernode
                 break;
             end
         end

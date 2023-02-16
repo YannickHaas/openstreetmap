@@ -18,7 +18,7 @@
 % 2010.11.25 (c) Ioannis Filippidis, jfilippidis@gmail.com
 
 %% name file
-openstreetmap_filename = 'map.osm';
+openstreetmap_filename = 'map_fau2.osm';
 %map_img_filename = 'map.png'; % image file saved from online, if available
 
 %% convert XML -> MATLAB struct
@@ -30,22 +30,30 @@ openstreetmap_filename = 'map.osm';
 %% find connectivity
 [connectivity_matrix, intersection_node_indices] = extract_connectivity(parsed_osm);
 intersection_nodes = get_unique_node_xy(parsed_osm, intersection_node_indices);
-
+%dg = connectivity_matrix; % directed graph
+dg = or(connectivity_matrix, connectivity_matrix.'); % make symmetric
+%%
+%Map-Repair
+dg(2315,2315) = 0;
+dg(209,2315) = 0;
+dg(2315,209) = 0;
+%%
+G = digraph(dg);
 %% plan a route
-%{
-% try with the assumption of one-way roads (ways in OSM)
-start = 1105; % node id
-target = 889;
-dg = connectivity_matrix; % directed graph
-[route, dist] = route_planner(dg, start, target);
-%}
 
+% try with the assumption of one-way roads (ways in OSM)
+start = 3671; % node id
+target = 1313;%1684
+
+[route, dist] = route_planner(G, start, target);
+
+%{
 % try without the assumption of one-way roads
 start = 1; % node global index
 target = 9;
 dg = or(connectivity_matrix, connectivity_matrix.'); % make symmetric
 [route, dist] = route_planner(dg, start, target);
-
+%}
 %% plot
 fig = figure;
 ax = axes('Parent', fig);
@@ -56,11 +64,11 @@ hold(ax, 'on')
 plot_way(ax, parsed_osm)
 %plot_way(ax, parsed_osm, map_img_filename) % if you also have a raster image
 
-plot_route(ax, route, parsed_osm)
-only_nodes = 1:10:1000; % not all nodes, to reduce graphics memory & clutter
-plot_nodes(ax, parsed_osm, only_nodes)
-
+path_xy = plot_route(ax, route, parsed_osm);
+only_nodes = 1:100:1000; % not all nodes, to reduce graphics memory & clutter
+%plot_nodes(ax, parsed_osm, only_nodes)
+%plot_route_way(ax, parsed_osm, route)
 % show intersection nodes (unseful, but may result into a cluttered plot)
-%plot_nodes(ax, parsed_osm, intersection_node_indices)
+plot_nodes(ax, parsed_osm, intersection_node_indices)
 
 hold(ax, 'off')

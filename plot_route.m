@@ -1,4 +1,4 @@
-function [] = plot_route(ax, route, parsed_osm)
+function [path_xy] = plot_route(ax, route, parsed_osm)
 % plot (over map) the route found by route planner
 %
 % usage
@@ -29,7 +29,7 @@ path_end = nodexy(:, route(1, end) );
 held = takehold(ax);
 
 plotmd(ax, start_xy, 'Color', 'm', 'Marker', 'o', 'MarkerSize', 15)
-plotmd(ax, path_xy, 'Color', 'r', 'LineStyle', '--', 'LineWidth', 5)
+plotmd(ax, path_xy, 'Color', 'r', 'LineStyle', '-', 'LineWidth', 5)
 plotmd(ax, path_end, 'Color', 'c', 'Marker', 's', 'MarkerSize', 15)
 
 restorehold(ax, held)
